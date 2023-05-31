@@ -3,14 +3,12 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user')
 
 exports.signup = (req, res, next) => {
-    
     bcrypt.hash(req.body.password, 10) // fonction de hachage du mot de passe
       .then(hash => {
         const user = new User({
           email: req.body.email,
           password: hash
         });
-        console.log('............'+user)
         user.save()
           .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
           .catch(error => res.status(400).json({ error }));
