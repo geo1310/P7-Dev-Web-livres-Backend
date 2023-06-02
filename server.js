@@ -1,5 +1,6 @@
 const http = require('http'); // importe le module fournit les fonctionnalités pour créer un serveur http
 const app = require('./app'); // importe le module principal de l'application express
+require('dotenv').config();
 
 const normalizePort = (val) => {
     const port = parseInt(val, 10);

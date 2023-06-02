@@ -2,20 +2,21 @@
 
 const express = require('express');
 const router = express.Router(); // création d'un routeur express
-const bookCtrl = require('../controllers/book')
-const auth = require('../middleware/auth')
-const multer = require('../middleware/multer-config')
+const bookCtrl = require('../controllers/book');
+const auth = require('../middleware/auth');
+const multer = require('../middleware/multer-config');
+const imageCompressionMiddleware = require('../middleware/compression');
 
 // routes
 
-  router.post('/', auth, multer, bookCtrl.createBook) // pas de parenthese car on n'appelle pas la fonction on l'applique seulement à la route
-  
-  router.put('/:id', auth, multer, bookCtrl.modifyBook)
+router.post('/', auth, multer, imageCompressionMiddleware, bookCtrl.createBook); // pas de parenthese car on n'appelle pas la fonction on l'applique seulement à la route
 
-  router.delete('/:id', auth, bookCtrl.deleteBook)
+router.put('/:id', auth, multer,imageCompressionMiddleware, bookCtrl.modifyBook);
 
-  router.get('/', bookCtrl.findAllBooks)
-  
-  router.get('/:id', bookCtrl.findOneBook)
+router.delete('/:id', auth, bookCtrl.deleteBook);
 
-module.exports = router;
+router.get('/', bookCtrl.findAllBooks);
+
+router.get('/:id', bookCtrl.findOneBook);
+
+module.exports = router; // regroupe les routes
