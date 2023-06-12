@@ -1,54 +1,29 @@
 const sharp = require('sharp');
-const fs = require('fs');
+const fs = require('fs').promises;
 
-const imageCompressionMiddleware = (req, res, next) => {
+const imageCompression = async (req, res, next) => {
     if (req.file) {
-        const compressedFileName = `compressed_${req.file.filename}`;
-        const compressedFilePath = `images/${compressedFileName}`;
+        const imagePath = req.file.path;
+        console.log(imagePath);
+        try {
+            const compressedData = await sharp(imagePath)
+                .webp({ quality: 50 }) // Définir la qualité de compression (entre 0 et 100)
+                .resize(500)
+                .toBuffer();
 
-        sharp(req.file.path)
-            .webp({ quality: 40 })
-            .resize(800)
-            .toFile(compressedFilePath, (error, info) => {
-                if (error) {
-                    console.error(
-                        "Erreur lors de la compression de l'image:",
-                        error
-                    );
-                    next(error); // Passez l'erreur au middleware suivant s'il y a une erreur
-                } else {
-                    console.log('Image compressée avec succès!');
-                    fs.unlink(req.file.path, (error) => {
-                        if (error) {
-                            console.error(
-                                'Erreur lors de la suppression du fichier:',
-                                error
-                            );
-                            next(error); // Passez l'erreur au middleware suivant s'il y a une erreur
-                        } else {
-                            // Remplacez le fichier d'origine par le fichier compressé en renommant le fichier
-                            fs.rename(
-                                compressedFilePath,
-                                req.file.path,
-                                (error) => {
-                                    if (error) {
-                                        console.error(
-                                            'Erreur lors du remplacement du fichier:',
-                                            error
-                                        );
-                                        next(error); // Passez l'erreur au middleware suivant s'il y a une erreur
-                                    } else {
-                                        next(); // Passez à la prochaine fonction middleware
-                                    }
-                                }
-                            );
-                        }
-                    });
-                }
-            });
-    } else {
-        next();
+            await fs.writeFile(imagePath, compressedData);
+            console.log(
+                "Image compressée avec succès et le fichier d'origine a été remplacé!"
+            );
+        } catch (error) {
+            console.error(
+                "Erreur lors de la compression de l'image ou de la mise à jour du fichier d'origine:",
+                error
+            );
+        }
     }
+
+    next();
 };
 
-module.exports = imageCompressionMiddleware;
+module.exports = imageCompression;

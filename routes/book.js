@@ -5,13 +5,13 @@ const router = express.Router(); // création d'un routeur express
 const bookCtrl = require('../controllers/book');
 const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
-const imageCompressionMiddleware = require('../middleware/compression');
+const imageCompression = require('../middleware/compression');
 
 // routes
 
-router.post('/', auth, multer, imageCompressionMiddleware, bookCtrl.createBook); // pas de parenthese car on n'appelle pas la fonction on l'applique seulement à la route
+router.post('/', auth, multer, imageCompression, bookCtrl.createBook); // pas de parenthese car on n'appelle pas la fonction on l'applique seulement à la route
 
-router.put('/:id', auth, multer,imageCompressionMiddleware, bookCtrl.modifyBook);
+router.put('/:id', auth, multer,imageCompression, bookCtrl.modifyBook);
 
 router.delete('/:id', auth, bookCtrl.deleteBook);
 
