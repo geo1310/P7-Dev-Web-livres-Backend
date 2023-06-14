@@ -7,7 +7,7 @@ const imageCompression = async (req, res, next) => {
         console.log(imagePath);
         try {
             const compressedData = await sharp(imagePath)
-                .webp({ quality: 50 }) // Définir la qualité de compression (entre 0 et 100)
+                //.webp({ quality: 50 }) // Définir la qualité de compression (entre 0 et 100)
                 .resize(500)
                 .toBuffer();
 

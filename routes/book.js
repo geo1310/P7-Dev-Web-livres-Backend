@@ -9,14 +9,18 @@ const imageCompression = require('../middleware/compression');
 
 // routes
 
+router.post('/:id/rating', auth, bookCtrl.ratingBook);
+
 router.post('/', auth, multer, imageCompression, bookCtrl.createBook); // pas de parenthese car on n'appelle pas la fonction on l'applique seulement à la route
 
-router.put('/:id', auth, multer,imageCompression, bookCtrl.modifyBook);
+router.put('/:id', auth, multer, imageCompression, bookCtrl.modifyBook);
 
 router.delete('/:id', auth, bookCtrl.deleteBook);
 
-router.get('/', bookCtrl.findAllBooks);
+router.get('/bestrating', bookCtrl.bestRatingBooks);
 
 router.get('/:id', bookCtrl.findOneBook);
+
+router.get('/', bookCtrl.findAllBooks);
 
 module.exports = router; // regroupe les routes

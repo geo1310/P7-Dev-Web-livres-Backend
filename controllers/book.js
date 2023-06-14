@@ -6,20 +6,20 @@ const fs = require('fs');
 // création d'un livre
 exports.createBook = (req, res, next) => {
     const bookObject = JSON.parse(req.body.book);
-
     const book = new Book({
         ...bookObject,
         userId: req.auth.userId,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${
             req.file.filename
         }`,
+        
     });
     book.save()
         .then(() => {
             res.status(201).json({ message: 'Objet enregistré !' });
         })
         .catch((error) => {
-            res.status(400).json({ error });
+            res.status(400).json({ error});
         });
 };
 
@@ -90,7 +90,56 @@ exports.findAllBooks = (req, res, next) => {
 
 // trouve un livre
 exports.findOneBook = (req, res, next) => {
+    
     Book.findOne({ _id: req.params.id })
-        .then((book) => res.status(200).json(book))
+        .then((book) => {
+            res.status(200).json(book);
+            next()
+        })
         .catch((error) => res.status(404).json({ error }));
 };
+
+// note un livre
+exports.ratingBook = (req, res, next) => {
+    const bookId = req.params.id;
+    const userId = req.body.userId;
+    const rating = req.body.rating;
+    console.log(bookId, ' ', userId, ' ', rating);
+
+    Book.findOneAndUpdate(
+        { _id: bookId, 'ratings.userId': { $ne: userId } }, // Vérifie si userId n'est pas déjà présent dans ratings
+        { $addToSet: { ratings: { userId: userId, grade: rating } } }, // Utilise $addToSet au lieu de $push
+        { new: true }
+    )
+        .then((book) => {
+            if (!book) {
+                // Si le livre n'est pas trouvé ou si l'utilisateur a déjà noté le livre, retourner une erreur
+                return res.status(404).json({ error: 'Le livre n\'a pas été trouvé ou l\'utilisateur a déjà noté le livre.' });
+            }
+
+            res.status(200).json(book);
+            console.log(book.ratings);
+            console.log('Moyenne du livre : ' + calculateAverageRating(book.ratings));
+        })
+        .catch((error) => res.status(500).json({ error }));
+};
+
+
+// Renvoie les 3 livres les mieux notes
+exports.bestRatingBooks = (req, res, next) => {
+    console.log('controler bestRating' );
+    
+};
+
+// calcul la moyenne des notes d'un livre
+const calculateAverageRating = (ratings) => {
+    if (ratings.length === 0) {
+        return 0; // Retourne 0 si le tableau est vide pour éviter une division par zéro
+    }
+
+    const sum = ratings.reduce((total, rating) => total + rating.grade, 0);
+    const average = sum / ratings.length;
+
+    return average;
+};
+
