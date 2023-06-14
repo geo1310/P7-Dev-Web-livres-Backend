@@ -104,7 +104,6 @@ exports.ratingBook = (req, res, next) => {
     const bookId = req.params.id;
     const userId = req.body.userId;
     const rating = req.body.rating;
-    console.log(bookId, ' ', userId, ' ', rating);
 
     Book.findOneAndUpdate(
         { _id: bookId, 'ratings.userId': { $ne: userId } }, // Vérifie si userId n'est pas déjà présent dans ratings
@@ -121,8 +120,6 @@ exports.ratingBook = (req, res, next) => {
             book.save() // Enregistre les modifications dans la base de données
                 .then((updatedBook) => {
                     res.status(200).json(updatedBook);
-                    console.log('Moyenne du livre : ' + updatedBook.averageRating);
-                    //this.bestRatingBooks(req,res)
                 })
                 .catch((error) => res.status(500).json({ error }));
             
@@ -137,7 +134,6 @@ exports.bestRatingBooks = (req, res, next) => {
         .sort({ 'averageRating': -1 }) // Trie les livres par note décroissante
         .limit(3) // Limite les résultats aux 3 premiers livres
         .then((books) => {
-            console.log(books)
             res.status(200).json(books);
         })
         .catch((error) => res.status(500).json({ error }));

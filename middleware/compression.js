@@ -4,7 +4,6 @@ const fs = require('fs').promises;
 const imageCompression = async (req, res, next) => {
     if (req.file) {
         const imagePath = req.file.path;
-        console.log(imagePath);
         try {
             const compressedData = await sharp(imagePath)
                 //.webp({ quality: 50 }) // Définir la qualité de compression (entre 0 et 100)
