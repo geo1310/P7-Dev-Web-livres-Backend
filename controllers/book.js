@@ -116,10 +116,16 @@ exports.ratingBook = (req, res, next) => {
                 // Si le livre n'est pas trouvé ou si l'utilisateur a déjà noté le livre, retourner une erreur
                 return res.status(404).json({ error: 'Le livre n\'a pas été trouvé ou l\'utilisateur a déjà noté le livre.' });
             }
-
-            res.status(200).json(book);
-            console.log(book.ratings);
-            console.log('Moyenne du livre : ' + calculateAverageRating(book.ratings));
+            const averageBook = calculateAverageRating(book.ratings)
+            book.averageRating = averageBook
+            book.save() // Enregistre les modifications dans la base de données
+                .then((updatedBook) => {
+                    res.status(200).json(updatedBook);
+                    console.log('Moyenne du livre : ' + updatedBook.averageRating);
+                    //this.bestRatingBooks(req,res)
+                })
+                .catch((error) => res.status(500).json({ error }));
+            
         })
         .catch((error) => res.status(500).json({ error }));
 };
@@ -127,8 +133,14 @@ exports.ratingBook = (req, res, next) => {
 
 // Renvoie les 3 livres les mieux notes
 exports.bestRatingBooks = (req, res, next) => {
-    console.log('controler bestRating' );
-    
+    Book.find()
+        .sort({ 'averageRating': -1 }) // Trie les livres par note décroissante
+        .limit(3) // Limite les résultats aux 3 premiers livres
+        .then((books) => {
+            console.log(books)
+            res.status(200).json(books);
+        })
+        .catch((error) => res.status(500).json({ error }));
 };
 
 // calcul la moyenne des notes d'un livre
@@ -140,6 +152,6 @@ const calculateAverageRating = (ratings) => {
     const sum = ratings.reduce((total, rating) => total + rating.grade, 0);
     const average = sum / ratings.length;
 
-    return average;
+    return Math.round(average);
 };
 
