@@ -21,7 +21,11 @@ const compressAndSaveImage = async (req, res, next) => {
     uploadImage.single('image')(req, res, async (error) => {
       if (error) {
         console.log('Erreur de téléchargement du fichier :', error.message);
-        return res.status(400).json({message: error.message});
+        return res.status(400).json({Erreur: error.message});
+      }
+      if (!req.file){
+        console.log('Aucun fichier téléchargé.');
+        return next()
       }
 
       console.log('Le fichier a été téléchargé en mémoire');

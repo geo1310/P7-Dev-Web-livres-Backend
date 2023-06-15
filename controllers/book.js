@@ -120,6 +120,7 @@ exports.ratingBook = (req, res, next) => {
             book.save() // Enregistre les modifications dans la base de données
                 .then((updatedBook) => {
                     res.status(200).json(updatedBook);
+                    
                 })
                 .catch((error) => res.status(500).json({ error }));
             
