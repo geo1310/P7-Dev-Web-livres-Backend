@@ -21,7 +21,7 @@ const compressAndSaveImage = async (req, res, next) => {
     uploadImage.single('image')(req, res, async (error) => {
       if (error) {
         console.log('Erreur de téléchargement du fichier :', error.message);
-        return res.status(400).json({Erreur: error.message});
+        return res.status(400).json({error: error.message});
       }
       if (!req.file){
         console.log('Aucun fichier téléchargé.');
@@ -46,12 +46,12 @@ const compressAndSaveImage = async (req, res, next) => {
         next();
       } catch (error) {
         console.log('Erreur lors de la compression et de l\'enregistrement de l\'image:', error);
-        res.status(500).json({message: error.message});
+        res.status(500).json({error: error.message});
       }
     });
   } catch (error) {
     console.log('Erreur lors du middleware multer:', error);
-    return res.status(500).json({message: error.message});
+    return res.status(500).json({error: error.message});
     
   }
 };
