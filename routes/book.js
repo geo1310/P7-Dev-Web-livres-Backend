@@ -1,25 +1,30 @@
-// le router stocke toute les routes
+// Router pour les Endpoints livres
 
 const express = require('express');
-const router = express.Router(); // création d'un routeur express
+const router = express.Router();
 const bookCtrl = require('../controllers/book');
 const auth = require('../middleware/auth');
 const saveAndCompressImage = require('../middleware/saveAndCompressImage');
 
-// routes
-
+// notation d un livre avec son id en parametre
 router.post('/:id/rating', auth, bookCtrl.ratingBook);
 
-router.post('/', auth, saveAndCompressImage, bookCtrl.createBook); // pas de parenthese car on n'appelle pas la fonction on l'applique seulement à la route
+// creation d un livre
+router.post('/', auth, saveAndCompressImage, bookCtrl.createBook);
 
+// modification d un livre avec son id en parametre
 router.put('/:id', auth, saveAndCompressImage, bookCtrl.modifyBook);
 
+// suppression d un livre avec son id en parametre
 router.delete('/:id', auth, bookCtrl.deleteBook);
 
+// liste des 3 livres les mieux notes
 router.get('/bestrating', bookCtrl.bestRatingBooks);
 
+// recherche d un livre avec son id en parametre
 router.get('/:id', bookCtrl.findOneBook);
 
+// liste de tous les livres
 router.get('/', bookCtrl.findAllBooks);
 
-module.exports = router; // regroupe les routes
+module.exports = router;

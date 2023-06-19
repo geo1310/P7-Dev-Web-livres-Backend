@@ -1,9 +1,17 @@
+/**
+ * Router pour les Endpoints utilisateurs
+ */
+
 const express = require('express');
 const router = express.Router();
 const userCtrl = require('../controllers/user');
-const passwordValidation = require('../middleware/passwordValidation')
+const passwordValidation = require('../middleware/passwordValidation');
+const emailValidation = require('../middleware/emailValidation');
 
-router.post('/signup', passwordValidation, userCtrl.signup);
-router.post('/login', userCtrl.login);
+// Inscription d'un utilisateur
+router.post('/signup', emailValidation, passwordValidation, userCtrl.signup);
+
+// Connexion d'un utilisateur
+router.post('/login', emailValidation, userCtrl.login);
 
 module.exports = router;

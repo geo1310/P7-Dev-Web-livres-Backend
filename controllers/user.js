@@ -2,9 +2,13 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-// Inscription
-
-exports.signup = (req, res, next) => {
+/**
+ * Inscription d'un utilisateur dans la base de donnees
+ * hachage du mot de passe avant enregistrement dans la base de donnees
+ * @param {object} req requete
+ * @param {object} res reponse
+ */
+exports.signup = (req, res) => {
     // fonction de hachage du mot de passe
     bcrypt
         .hash(req.body.password, 10)
@@ -17,15 +21,24 @@ exports.signup = (req, res, next) => {
                 .then(() =>
                     res.status(201).json({ message: 'Utilisateur créé !' })
                 )
-                .catch((error) => res.status(400).json({ error }));
+                .catch((error) =>
+                    res
+                        .status(401)
+                        .json({ error: 'Utilisateur deja enregistré' })
+                );
         })
 
         .catch((error) => res.status(500).json({ error }));
 };
 
-// Login
-
-exports.login = (req, res, next) => {
+/**
+ * Login d'un utilisateur
+ * Verification de la presence de l'email dans la base de donnees
+ * Verification du mot de passe utilisateur
+ * @param {object} req requete
+ * @param {object} res reponse
+ */
+exports.login = (req, res) => {
     User.findOne({ email: req.body.email })
         .then((user) => {
             if (!user) {
@@ -46,7 +59,7 @@ exports.login = (req, res, next) => {
                         token: jwt.sign(
                             { userId: user._id },
                             process.env.TOKEN_SECRET,
-                            { expiresIn: '5m' }
+                            { expiresIn: '2h' }
                         ),
                     });
                 })
