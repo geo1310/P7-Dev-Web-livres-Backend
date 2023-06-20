@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const userRoutes = require('./routes/user');
 const booksRoutes = require('./routes/book');
+const mongoSanitize = require('express-mongo-sanitize');
 
 //connexion a la base de donnees
 mongoose
@@ -30,7 +31,10 @@ app.use(
     })
 );
 
-//  Analyse automatiquement le corps de la requête entrante en tant que JSON, puis le transforme en un objet JavaScript
+// Nettoyage des données de requetes
+app.use(mongoSanitize());
+
+//  Analyse automatiquement le corps de la requête entrante extrait le JSON, puis le transforme en un objet JavaScript
 app.use(express.json());
 
 // routes générales

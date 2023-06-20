@@ -1,6 +1,5 @@
 const Book = require('../models/book');
 const fs = require('fs');
-const sanitize = require('mongo-sanitize');
 
 /**
  * Création d'un Livre --------------------------------------------------
@@ -8,7 +7,7 @@ const sanitize = require('mongo-sanitize');
  * @param {object} res reponse
  */
 exports.createBook = (req, res) => {
-    const bookObject = JSON.parse(sanitize(req.body.book));
+    const bookObject = JSON.parse(req.body.book);
 
     // controle de la note si pas entre 1 et 5 envoie une liste vide
     if (bookObject.ratings[0].grade < 1 || bookObject.ratings[0].grade > 5) {
@@ -39,12 +38,12 @@ exports.createBook = (req, res) => {
 exports.modifyBook = (req, res) => {
     const bookObject = req.file
         ? {
-              ...JSON.parse(sanitize(req.body.book)),
+              ...JSON.parse(req.body.book),
               imageUrl: `${req.protocol}://${req.get('host')}/images/${
                   req.file.filename
               }`,
           }
-        : { ...sanitize(req.body) };
+        : { ...req.body };
     Book.findOne({ _id: req.params.id })
         .then((book) => {
             // verification de l'authentification
